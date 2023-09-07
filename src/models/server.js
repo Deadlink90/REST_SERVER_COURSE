@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
 const userRoutes = require("../routes/user.routes");
+const authRoutes = require("../routes/auth.routes");
 const { dbConnection } = require("../database/config");
 const insertIntoRole = require("../database/init/role.init");
 
@@ -12,7 +13,10 @@ class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT;
+
     this.usersPath = "/api/users";
+    this.authPath = "/api/auth";
+
     //dbConnection
     this.databaseConnection();
     //middlewares
@@ -40,6 +44,7 @@ class Server {
 
   routes() {
     this.app.use(this.usersPath, userRoutes);
+    this.app.use(this.authPath,authRoutes);
   }
 
   listen() {
