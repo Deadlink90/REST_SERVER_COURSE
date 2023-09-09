@@ -1,5 +1,4 @@
-const User = require("../models/user.model");
-const Role = require("../models/role.model");
+const {User,Role,Category,Product} = require("../models");
 
 const isRoleValid = async (role = "") => {
   const roleExist = await Role.findOne({ name: role });
@@ -18,8 +17,21 @@ const existsUser = async (id) => {
   if (!user) throw new Error(`User not founded`);
 };
 
+const existsCategory = async(categoryName) => {
+const name = categoryName.toUpperCase();
+const categoryExists = await Category.findOne({name});
+if(categoryExists) throw new Error( `The category '${name}' already exists`)
+}
+
+const existsProduct = async(name)=> {
+const product = await Product.findOne({name});
+if(product) throw new Error(`The product '${name}' already exists`)
+}
+
 module.exports = {
   isRoleValid,
   existsEmail,
-  existsUser
+  existsUser,
+  existsCategory,
+  existsProduct
 };

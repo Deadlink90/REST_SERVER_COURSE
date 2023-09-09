@@ -4,18 +4,28 @@ const cors = require("cors");
 const path = require("path");
 const userRoutes = require("../routes/user.routes");
 const authRoutes = require("../routes/auth.routes");
+const categoriesRoutes = require("../routes/categories.routes")
+const productsroutes = require("../routes/products.routes");
+const searchRoutes = require("../routes/search.routes");
 const { dbConnection } = require("../database/config");
 const insertIntoRole = require("../database/init/role.init");
-
-
+const insertIntoCategories = require("../database/init/categories.init");
+const insertIntoProduct = require("../database/init/product.init");
+const insertIntouser = require("../database/init/user.init");
 
 class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT;
 
-    this.usersPath = "/api/users";
-    this.authPath = "/api/auth";
+    this.paths = {
+      auth: "/api/auth",
+      categories: "/api/categories",
+      products:"/api/products",
+      users: "/api/users",
+      search:"/api/search"
+
+    };
 
     //dbConnection
     this.databaseConnection();
@@ -27,8 +37,8 @@ class Server {
     this.init();
   }
 
-  async databaseConnection(){
-  await dbConnection();
+  async databaseConnection() {
+    await dbConnection();
   }
 
   middlewares() {
@@ -38,13 +48,19 @@ class Server {
     this.app.use(express.static(path.join(__dirname, "../public")));
   }
 
-  init(){
-  insertIntoRole()
+  init() {
+    insertIntoRole();
+    insertIntouser();
+    insertIntoCategories()
+    insertIntoProduct();
   }
 
   routes() {
-    this.app.use(this.usersPath, userRoutes);
-    this.app.use(this.authPath,authRoutes);
+    this.app.use(this.paths.auth, authRoutes);
+    this.app.use(this.paths.categories,categoriesRoutes);
+    this.app.use(this.paths.products,productsroutes)
+    this.app.use(this.paths.search,searchRoutes)
+    this.app.use(this.paths.users, userRoutes);
   }
 
   listen() {
