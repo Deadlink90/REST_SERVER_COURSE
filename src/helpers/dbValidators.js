@@ -28,10 +28,17 @@ const product = await Product.findOne({name});
 if(product) throw new Error(`The product '${name}' already exists`)
 }
 
+const allowedCollections = (collection='',collections=[]) =>{
+ const isAllowed = collections.includes(collection)
+ if(!isAllowed) throw new Error(`Not allowed collection (${collection})`);
+ return true;
+}
+
 module.exports = {
   isRoleValid,
   existsEmail,
   existsUser,
   existsCategory,
-  existsProduct
+  existsProduct,
+  allowedCollections
 };

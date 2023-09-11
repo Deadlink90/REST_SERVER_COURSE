@@ -2,11 +2,13 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
+const fileUpload = require("express-fileupload");
 const userRoutes = require("../routes/user.routes");
 const authRoutes = require("../routes/auth.routes");
 const categoriesRoutes = require("../routes/categories.routes")
 const productsroutes = require("../routes/products.routes");
 const searchRoutes = require("../routes/search.routes");
+const uploadRoutes = require("../routes/upload.routes");
 const { dbConnection } = require("../database/config");
 const insertIntoRole = require("../database/init/role.init");
 const insertIntoCategories = require("../database/init/categories.init");
@@ -23,8 +25,8 @@ class Server {
       categories: "/api/categories",
       products:"/api/products",
       users: "/api/users",
-      search:"/api/search"
-
+      search:"/api/search",
+      upload:"/api/upload"
     };
 
     //dbConnection
@@ -45,6 +47,11 @@ class Server {
     this.app.use(morgan("dev"));
     this.app.use(cors());
     this.app.use(express.json());
+    this.app.use(fileUpload({
+    useTempFiles:true,
+    tempFileDir:'/tmp/',
+    createParentPath:true  
+    }))
     this.app.use(express.static(path.join(__dirname, "../public")));
   }
 
@@ -61,6 +68,7 @@ class Server {
     this.app.use(this.paths.products,productsroutes)
     this.app.use(this.paths.search,searchRoutes)
     this.app.use(this.paths.users, userRoutes);
+    this.app.use(this.paths.upload,uploadRoutes)
   }
 
   listen() {
