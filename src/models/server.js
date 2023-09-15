@@ -2,6 +2,9 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
+const {createServer} = require('http');
+const {Server:socketServer} = require('socket.io');
+const {sockets} = require('../sockets');
 const fileUpload = require("express-fileupload");
 const userRoutes = require("../routes/user.routes");
 const authRoutes = require("../routes/auth.routes");
@@ -18,6 +21,8 @@ const insertIntouser = require("../database/init/user.init");
 class Server {
   constructor() {
     this.app = express();
+    this.server = createServer(this.app);
+    this.io = new socketServer(this.server);
     this.port = process.env.PORT;
 
     this.paths = {
@@ -35,8 +40,10 @@ class Server {
     this.middlewares();
     //routes
     this.routes();
+    //sockets
+    this.sockets();
     //inits
-    this.init();
+    // this.init();
   }
 
   async databaseConnection() {
@@ -71,8 +78,12 @@ class Server {
     this.app.use(this.paths.upload,uploadRoutes)
   }
 
+  sockets(){
+    sockets(this.io);
+  }
+
   listen() {
-    this.app.listen(this.port, () => {
+    this.server.listen(this.port, () => {
       console.log(`-> Server listening on port ${this.port}`);
     });
   }
